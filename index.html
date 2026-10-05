@@ -232,7 +232,7 @@ function pack(items,W,H){
 
 const feat=()=>{const f=FEATURED.toLowerCase();return vis().find(t=>f?t.addr.toLowerCase()===f:t.sym.toUpperCase()==="BUBBLE"&&t.by.toLowerCase()===TREASURY)};
 function render(){
- const ft=feat(),ca=(ft?ft.addr:FEATURED)||"0x0000",real=/^0x[0-9a-fA-F]{40}$/.test(ca);
+ const ft=feat(),ca=(ft?ft.addr:FEATURED)||"0x73835c23f3c92686e3d8e3e9d1ca4ac0f397064d",real=/^0x[0-9a-fA-F]{40}$/.test(ca);
  $("#feat").innerHTML="";
  const s=vis().sort((a,b)=>b.mcRel-a.mcRel);
  $("#hero").innerHTML=`<div>${bub(ft||PH,230,"full")}</div><div><h1>$BUBBLE</h1><div class="meta mono">${ft?`<span>${esc(ft.name)}</span><span>MC <b>${mcT(ft)}</b></span><span class="${cls(ft.ch)}">${pc(ft.ch)} since launch</span>`:`<span>The main token of Bubble</span>`}</div><div class="ca mono"><span>CA</span><code>${esc(ca)}</code>${real?`<button data-copy="${esc(ca)}">Copy</button>`:""}</div></div><div>${ft?`<button class="btn" data-open="${ft.addr}">Trade on Bubble</button>`:`<button class="btn" disabled>Coming soon</button>`}</div>`;
