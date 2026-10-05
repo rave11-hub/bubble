@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bubble — Token Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Patrick+Hand+SC&display=swap" rel="stylesheet">
+<style>:root{--bg:#f6a800;--panel:#fffdf6;--ink:#111;--mute:#5a4300;--line:#111;--up:#0a7a3d;--down:#c4161c;--btn:#111;--btnink:#fff;--sh:4px 4px 0 #111;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:"Patrick Hand",system-ui,sans-serif;font-size:18px;line-height:1.35;background-color:var(--bg);background-image:linear-gradient(rgba(0,0,0,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.09) 1px,transparent 1px);background-size:26px 26px}
+.mono{font-family:"Patrick Hand",system-ui,sans-serif;letter-spacing:.02em}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #111;outline-offset:2px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;border-bottom:3px solid #111;position:sticky;top:env(safe-area-inset-top,0px);background:var(--panel);z-index:5}
+.logo{display:flex;align-items:center;gap:10px;font-family:"Patrick Hand SC",sans-serif;font-size:34px;line-height:1}
+nav{display:flex;gap:22px;align-items:center}
+nav a,nav button.lnk{background:none;border:0;padding:0;color:#111;text-decoration:none;font-size:20px}
+nav .on{text-decoration:underline wavy;text-underline-offset:6px}
+.btn{background:var(--btn);color:var(--btnink);border:2.5px solid #111;border-radius:999px;padding:7px 20px;font-size:19px;box-shadow:3px 3px 0 rgba(0,0,0,.35);transition:transform .1s}
+.btn:hover{transform:translate(-1px,-1px)}.btn.ghost{background:#fff;color:#111}.btn:disabled{opacity:.45;cursor:default}
+main{max-width:1240px;margin:0 auto;padding:24px}
+.hero{display:grid;grid-template-columns:auto 1fr auto;gap:36px;align-items:center;background:var(--panel);border:3px solid #111;border-radius:30px;box-shadow:var(--sh);padding:28px 40px}
+.hero h1{margin:0;font-family:"Patrick Hand SC",sans-serif;font-weight:400;font-size:clamp(48px,9vw,112px);line-height:.95;letter-spacing:.01em}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;color:var(--mute)}.hero .meta b{color:#111;font-weight:400}
+.ca{margin-top:12px;display:flex;align-items:center;gap:10px;font-size:15px;color:var(--mute);flex-wrap:wrap}
+.ca code{word-break:break-all;font-family:ui-monospace,monospace;font-size:13px;color:#111}
+.ca button{border:2px solid #111;background:#fff;border-radius:8px;padding:1px 10px;font-size:15px}
+.up{color:var(--up)}.down{color:var(--down)}
+/* speech bubbles */
+.sb{position:relative;display:block;width:var(--s);height:var(--s);flex:none;transition:transform .2s}
+.sb svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.22))}
+.sb svg .o{fill:#fff;stroke:#111;stroke-width:3.4;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.sb.black svg .o{fill:#111}
+.sc{position:absolute;top:10%;bottom:24%;left:8%;right:8%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--s)*.025);text-align:center;color:#111;line-height:1}
+.sb.burst .sc{inset:20%}.sb.black .sc{color:#fff}
+.sc b{font-family:"Patrick Hand SC",sans-serif;font-weight:400;font-size:max(12px,calc(var(--s)*.15));letter-spacing:.02em}
+.sc i{font-style:normal;font-size:max(11px,calc(var(--s)*.085))}
+.sb.black .up{color:#6ee7a0}.sb.black .down{color:#ff8f8f}
+.gp{display:block;width:62%;height:max(6px,calc(var(--s)*.045));border:2px solid currentColor;border-radius:99px;overflow:hidden}
+.gp u{display:block;height:100%;background:#f6a800}
+.av{position:relative;overflow:hidden;border-radius:50%;border:2.5px solid #111;background:#f6a800;display:grid;place-items:center;width:calc(var(--s)*.3);height:calc(var(--s)*.3);font-family:"Patrick Hand SC",sans-serif;font-size:calc(var(--s)*.16);color:#111;flex:none}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sb.black .av{border-color:#fff}
+.sb.icon .av{width:calc(var(--s)*.55);height:calc(var(--s)*.55);font-size:calc(var(--s)*.28)}
+.sb.sm:not(.icon):not(.bar) .av{display:none}.sb.xs .gp,.sb.xs .sc i{display:none}
+.hero .sb{animation:bob 6s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-10px) rotate(-2deg)}}
+.sec{display:inline-block;margin:32px 0 12px;background:#fff;border:2.5px solid #111;border-radius:999px;padding:1px 16px;font-family:"Patrick Hand SC",sans-serif;font-size:20px}
+.top{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.chip{display:flex;align-items:center;gap:12px;background:var(--panel);border:2.5px solid #111;border-radius:18px;box-shadow:3px 3px 0 #111;padding:10px 14px;text-align:left;width:100%}
+.chip .t{flex:1;min-width:0}.chip .t b{display:block;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chip .t span{font-size:15px;color:var(--mute)}
+.bar{display:flex;justify-content:space-between;align-items:end;border-bottom:3px solid #111;margin-top:36px;gap:12px;flex-wrap:wrap}
+.tabs{display:flex;gap:22px}
+.tabs button{background:none;border:0;border-bottom:4px solid transparent;padding:8px 0;color:#4a3600;font-family:"Patrick Hand SC",sans-serif;font-size:25px}
+.tabs button[aria-selected="true"]{color:#111;border-color:#111}
+.seg{display:flex;border:2.5px solid #111;border-radius:999px;padding:2px;margin-bottom:8px;background:#fff}
+.seg button{border:0;background:none;border-radius:999px;padding:3px 16px;font-size:18px}.seg button[aria-pressed="true"]{background:#111;color:#fff}
+#field{position:relative;margin-top:12px;height:620px;overflow:hidden}
+.fb{position:absolute;z-index:1;animation:drift var(--d,7s) ease-in-out var(--dl,0s) infinite alternate;transition:left .6s,top .6s}
+.fb:hover .sb{transform:rotate(-3deg) scale(1.07)}
+.dd{position:absolute;pointer-events:none;font-size:24px;opacity:.85}
+@keyframes drift{from{transform:translate(-6px,-8px)}to{transform:translate(6px,9px)}}
+.hint{font-size:16px;margin:8px 4px 0}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:16px;margin-top:16px}
+.card{background:var(--panel);border:2.5px solid #111;border-radius:20px;box-shadow:3px 3px 0 #111;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;width:100%}
+.card .sb{margin:4px auto 6px}.card small{color:var(--mute);font-size:15px}.card b{font-weight:400;font-size:20px}
+.card .row{display:flex;justify-content:space-between;font-size:16px}.card .d{font-size:15px;color:var(--mute);border:2px dashed #111;border-radius:10px;padding:5px 8px;min-height:44px}
+.empty{margin-top:16px;padding:48px 20px;text-align:center;background:var(--panel);border:2.5px dashed #111;border-radius:22px}
+dialog{border:3px solid #111;border-radius:26px;background:var(--panel);color:#111;padding:0;width:min(460px,92vw);max-height:90vh;box-shadow:6px 6px 0 #111}
+dialog::backdrop{background:rgba(40,25,0,.55)}dialog a{color:#111}
+.mb{padding:24px;display:flex;flex-direction:column;gap:12px}.mb .sb{margin:0 auto}
+.mb h2{margin:0;text-align:center;font-family:"Patrick Hand SC",sans-serif;font-weight:400;font-size:34px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stats div{background:#ffeaa8;border:2px solid #111;border-radius:12px;padding:8px 12px;font-size:15px;color:var(--mute)}.stats b{display:block;color:#111;font-weight:400;font-size:20px}
+.pbar{height:14px;border:2.5px solid #111;border-radius:99px;background:#fff;overflow:hidden}.pbar i{display:block;height:100%;background:#f6a800}
+label{font-size:16px;color:var(--mute);display:flex;flex-direction:column;gap:4px}
+input,textarea,select{font:inherit;color:#111;background:#fff;border:2.5px solid #111;border-radius:12px;padding:7px 12px;width:100%}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.q{font-size:16px;color:var(--mute);min-height:20px}
+.acts{display:flex;gap:10px}.acts .btn{flex:1}
+.frow{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:2px solid #111;border-radius:14px;padding:8px 12px}.frow small{display:block;color:var(--mute);font-size:14px}.frow .btn{padding:3px 16px;font-size:16px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#111;color:#fff;padding:9px 20px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;z-index:20}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:860px){header{padding:10px 16px}nav .hide{display:none}main{padding:16px}.hero{grid-template-columns:1fr;padding:22px;gap:18px;justify-items:start}.top{grid-template-columns:1fr 1fr}#field{height:660px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#field .sb svg{filter:none}.fb{contain:layout style}.more{display:block;margin:18px auto 0}
+.feat{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel);border:3px solid #111;border-radius:22px;box-shadow:var(--sh);padding:10px 18px;margin-bottom:16px}.feat b{font-family:"Patrick Hand SC",sans-serif;font-weight:400;font-size:28px}.feat code{word-break:break-all;font-family:ui-monospace,monospace;font-size:13px}.feat button[data-copy]{border:2px solid #111;background:#fff;border-radius:8px;padding:1px 10px;font-size:15px}.feat .btn{margin-left:auto;padding:4px 18px}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="13" cy="21" r="11" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="25" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="9" cy="17" r="2.2" fill="currentColor"/></svg>bubble</div>
+ <nav>
+  <button class="lnk hide" id="nNew">New coin</button>
+  <button class="lnk hide" id="nFees" style="display:none">Creator fees</button>
+  <a class="on hide" href="#launches">Launches</a>
+  
+  <button class="btn" id="wallet">Connect wallet</button>
+ </nav>
+</header>
+<main>
+ <div id="feat"></div>
+ <section class="hero" id="hero"></section>
+ <div class="sec mono">Top by market cap</div>
+ <div class="top" id="top"></div>
+ <div class="bar" id="launches">
+  <div class="tabs" role="tablist">
+   <button role="tab" aria-selected="true" data-t="new">New</button>
+   <button role="tab" aria-selected="false" data-t="trending">Trending</button>
+   <button role="tab" aria-selected="false" data-t="graduated">Graduated</button>
+  </div>
+  <div class="seg"><button data-v="field" aria-pressed="true">Bubbles</button><button data-v="grid" aria-pressed="false">Grid</button></div>
+ </div>
+ <div id="stage"></div>
+ <p class="hint" id="hint">Bubble size = market cap relative to the graduation target. A full ring = graduated. Data is read straight from Robinhood Chain (Pons v2).</p>
+</main>
+
+<dialog id="dlg"><div class="mb" id="dbody"></div></dialog>
+<div id="toast" role="status"></div>
+
+<script type="module">
+import {createPublicClient,createWalletClient,custom,http,parseAbi,parseEther,parseUnits,formatUnits,formatEther,toHex,zeroAddress,encodeAbiParameters,keccak256,parseEventLogs} from "https://esm.sh/viem@2";
+const START_BLOCK=0n; // set to the Pons factory deploy block (e.g. 80000000n) to make the first load much faster
+const ONLY_BUBBLE=true; // true = show only tokens whose fee recipient is the Bubble treasury; false = every Pons token
+const HIDDEN=[]; // paste token addresses (0x…) of test launches to hide them from this site
+const HID=new Set(HIDDEN.map(a=>a.toLowerCase())),vis=()=>TK.filter(t=>!HID.has(t.addr.toLowerCase())&&(!ONLY_BUBBLE||(t.cfr||"").toLowerCase()===TREASURY));
+const FEATURED=""; // paste the $BUBBLE contract address (0x…) here: the hero always shows $BUBBLE, with this CA
+const PH={addr:zeroAddress,sym:"BUBBLE",name:"Bubble",logo:"",ch:null,gr:0,mc:0,pi:{sym:"ETH"}}; // placeholder bubble until $BUBBLE exists on chain
+const RPC="https://rpc.mainnet.chain.robinhood.com",EX="https://robinhoodchain.blockscout.com";
+const TREASURY="0xe734af2cB242700fc117CBe94b09acE4F91Bd1f4".toLowerCase();
+const A={factory:"0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e",router:"0xe33E9E479dF8802cb0866d5d05258bEc4cF62948",escrow:"0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e",hook:"0xE5e702641Ea86F4ae6cC3cDaeD2B886f976Be044"};
+const chain={id:4663,name:"Robinhood Chain",nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},rpcUrls:{default:{http:[RPC]}},blockExplorers:{default:{name:"Blockscout",url:EX}}};
+const S="struct Socials { string twitter; string telegram; string discord; string website; string farcaster; }";
+const TP="struct TokenParams { string name; string symbol; string logo; string description; Socials socials; address creatorFeeRecipient; uint16 creatorTaxBps; bool buybackEnabled; bytes32 expectedEconomics; bytes32 salt; }";
+const F=parseAbi([S,TP,
+"struct LaunchConfig { uint256 supply; uint256 curveFeeBps; uint256 phantomQuote; uint256 graduationThreshold; uint24 poolFee; int24 tickSpacing; bool enabled; }",
+"struct LaunchedToken { address token; address curve; address deployer; address creatorFeeRecipient; address pairToken; uint256 graduationThreshold; uint24 poolFee; int24 tickSpacing; uint16 creatorTaxBps; bool buybackEnabled; uint8 phase; uint256 sweptQuote; uint256 sweptTokens; uint256 sweptAt; bool exists; }",
+"function launchToken(TokenParams params, uint256 launchConfigId, address pairToken) payable returns (address token, address curve)",
+"function previewLaunchEconomics(uint256 launchConfigId, address pairToken) view returns (bytes32)",
+"function launchFee() view returns (uint256)","function launchConfigCount() view returns (uint256)",
+"function getLaunchConfig(uint256 id) view returns (LaunchConfig)","function getLaunchedToken(address token) view returns (LaunchedToken)",
+"function canLaunch(address) view returns (bool)","function maxCreatorTaxBps() view returns (uint256)",
+"function pairTokenEconomics(address pairToken) view returns (uint256 phantomQuote, uint256 graduationThreshold, uint8 decimals)",
+"event TokenLaunched(address indexed token, address indexed curve, address indexed deployer, address pairToken, uint256 launchConfigId, uint256 graduationThreshold)"]);
+const R=parseAbi([S,TP,"function launchAndBuy(TokenParams params, uint256 launchConfigId, address pairToken, uint256 quoteIn, uint256 minTokensOut, address recipient, address[] snipeTaxExemptions) payable returns (address token, address curve, uint256 tokensOut)"]);
+const C=parseAbi(["function getReserves() view returns (uint256 quoteReserve, uint256 tokenReserve)","function realQuoteReserve() view returns (uint256)","function sellableTokens() view returns (uint256)","function feeBps() view returns (uint256)","function creatorTaxBps() view returns (uint256)","function currentSnipeTaxBps(address recipient) view returns (uint256)","function buy(uint256 quoteIn, uint256 minTokensOut, address recipient) payable returns (uint256)","function sell(uint256 tokensIn, uint256 minQuoteOut, address recipient) returns (uint256)"]);
+const K=parseAbi([S,"function name() view returns (string)","function symbol() view returns (string)","function totalSupply() view returns (uint256)","function allowance(address,address) view returns (uint256)","function approve(address,uint256) returns (bool)","function getTokenInfo() view returns (address tokenDeployer, string tokenLogo, string tokenDescription, Socials tokenSocials)"]);
+const C2=parseAbi(["function quoteFeeBalance() view returns (uint256)","function creatorTaxBalance() view returns (uint256)","function sweepFees(uint256 minBuybackTokensOut)"]);
+const H=parseAbi(["function pendingFees(bytes32 poolId, address currency) view returns (uint256)","function pendingCreatorTax(bytes32 poolId, address currency) view returns (uint256)","function sweepPoolFees(bytes32 poolId, uint256 minConversionQuoteOut, uint256 minBuybackTokensOut)"]);
+const E=parseAbi(["function balanceOf(address recipient) view returns (uint256)","function balanceOfToken(address recipient, address token) view returns (uint256)","function claim()","function claimToken(address token)"]);
+const EV=F.find(x=>x.name==="TokenLaunched");
+const pub=createPublicClient({chain,transport:http(RPC)});
+const wait=ms=>new Promise(r=>setTimeout(r,ms)),isNet=e=>/HTTP request failed|fetch|429|rate|timeout/i.test(e.shortMessage||e.message||"");
+const rd=async(address,abi,functionName,args=[],t=0)=>{try{return await pub.readContract({address,abi,functionName,args})}catch(e){if(t<2&&isNet(e)){await wait(500*(t+1));return rd(address,abi,functionName,args,t+1)}throw e}};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmN=n=>!isFinite(n)?"–":n>=1e3?(n/1e3).toFixed(1)+"K":n>=1?n.toFixed(2):n>=.001?n.toPrecision(2):n===0?"0":n.toExponential(1);
+const pc=n=>n==null?"":(n>0?"+":"")+n.toLocaleString("en",{maximumFractionDigits:1})+"%";
+const cls=n=>n==null||n>=0?"up":"down",short=a=>a.slice(0,6)+"…"+a.slice(-4),hue=a=>parseInt(a.slice(2,6),16)%360;
+const safe=u=>{u=(u||"").trim();return u.startsWith("ipfs://")?"https://ipfs.io/ipfs/"+u.slice(7).replace(/^ipfs\//,""):/^https:\/\//.test(u)||/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(u)?u:""};
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.i);toast.i=setTimeout(()=>t.classList.remove("show"),3200)}
+let TK=[],tab="new",view="field",acct=null,wc=null,loading=true,err="",cur=null,mode="buy",amt="",slip="1",qt,PAIR={},lim=60,OPS=[],CH=0n;
+/* ---------- data ---------- */
+const lim8=(()=>{let n=0;const q=[],nx=()=>{if(n<3&&q.length){n++;const [f,ok,no]=q.shift();f().then(ok,no).finally(()=>{n--;nx()})}};return f=>new Promise((ok,no)=>{q.push([f,ok,no]);nx()})})();
+let LC=0;
+async function logs(from,to,d=0,t=0){if(++LC>800)throw new Error("Too many log requests. Set START_BLOCK in the script.");
+ try{return await lim8(()=>pub.getLogs({address:A.factory,event:EV,fromBlock:from,toBlock:to}))}
+ catch(e){if(isNet(e)&&t<3){await wait(800*(t+1));return logs(from,to,d,t+1)}
+  if(d>16||to<=from)throw e;const m=(from+to)/2n;return (await Promise.all([logs(from,m,d+1),logs(m+1n,to,d+1)])).flat()}}
+async function pairInfo(a){if(PAIR[a])return PAIR[a];const [ph,,dec]=await rd(A.factory,F,"pairTokenEconomics",[a]).catch(()=>[0n,0n,18]);const sym=a===zeroAddress?"ETH":await rd(a,K,"symbol").catch(()=>"?");return PAIR[a]={phantom:ph,dec:a===zeroAddress?18:(Number(dec)||18),sym}}
+async function live(o){
+ try{const [r,real,rec]=await Promise.all([rd(o.curve,C,"getReserves"),rd(o.curve,C,"realQuoteReserve"),rd(A.factory,F,"getLaunchedToken",[o.addr])]);o.phase=rec.phase;o.cfr=rec.creatorFeeRecipient;o.qR=r[0];o.tR=r[1];o.real=real}catch(e){}
+ if(o.qR!==undefined&&o.tR>0n){const p=Number(o.qR)/Number(o.tR);o.mc=p*Number(o.supply)/10**o.pi.dec;o.mcRel=Math.max(.01,p*Number(o.supply)/Number(o.thr));o.ch=(o.ph||o.pi.phantom)>0n?(p/(Number(o.ph||o.pi.phantom)/Number(o.supply))-1)*100:null}
+ else{o.mc=0;o.mcRel=o.phase>=2?1.5:.01;o.ch=null}
+ o.gr=o.phase>=2?100:Math.min(100,Number(o.real||0n)/Number(o.thr)*100)}
+async function build(l){const g=l.args,t=g.token;
+ const [name,sym,supply,info,rec,pi]=await Promise.all([rd(t,K,"name"),rd(t,K,"symbol"),rd(t,K,"totalSupply"),rd(t,K,"getTokenInfo").catch(()=>null),rd(A.factory,F,"getLaunchedToken",[t]),pairInfo(g.pairToken)]);
+ const cfg=pi.phantom>0n?null:await rd(A.factory,F,"getLaunchConfig",[g.launchConfigId]).catch(()=>null),o={addr:t,ph:cfg?cfg.phantomQuote:pi.phantom,curve:g.curve,pair:g.pairToken,thr:g.graduationThreshold,name,sym,supply,logo:safe(info?.[1]),desc:info?.[2]||"",soc:info?.[3]||{},by:g.deployer,pi,h:hue(t),phase:rec.phase,cfr:rec.creatorFeeRecipient,pf:rec.poolFee,ts:rec.tickSpacing,blk:Number(l.blockNumber)*1e4+Number(l.logIndex)};
+ await live(o);return o}
+const CK="bubble:cache:v3",jr=(k,x)=>typeof x==="bigint"?"__b"+x:x,jv=(k,x)=>typeof x==="string"&&x.startsWith("__b")?BigInt(x.slice(3)):x;
+const ldC=()=>{try{return JSON.parse(localStorage.getItem(CK),jv)}catch(e){return null}};
+const svC=h=>{try{localStorage.setItem(CK,JSON.stringify({head:String(h),items:TK},jr))}catch(e){}};
+async function findStart(head){try{let lo=0n,hi=head;const has=async n=>{const c=await pub.getCode({address:A.factory,blockNumber:n});return !!c&&c!=="0x"};if(!await has(hi))return 0n;
+ while(lo<hi){const m=(lo+hi)/2n;if(await has(m))hi=m;else lo=m+1n}return lo>1000n?lo-1000n:0n}catch(e){return 0n}}
+async function refresh(l){for(let i=0;i<l.length;i+=8)await Promise.all(l.slice(i,i+8).map(live))}
+async function load(){err="";LC=0;const c=ldC(),cached=!!(c&&Array.isArray(c.items)&&c.items.length);CH=cached&&c.head?BigInt(c.head):0n;
+ if(cached){TK=c.items;TK.forEach(t=>{if(t.pi)PAIR[t.pair]=t.pi});loading=false}else loading=true;
+ render();
+ try{const head=await pub.getBlockNumber(),from=cached&&c.head?BigInt(c.head)+1n:(START_BLOCK>0n?START_BLOCK:await findStart(head)),lg=from<=head?await logs(from,head):[],have=new Set(TK.map(t=>t.addr)),fresh=lg.filter(l=>!have.has(l.args.token)),out=[];
+  for(let i=0;i<fresh.length;i+=8)out.push(...await Promise.all(fresh.slice(i,i+8).map(l=>build(l).catch(()=>null))));
+  const ok=out.every(Boolean);TK=[...new Map([...out.filter(Boolean),...TK].map(t=>[t.addr,t])).values()].sort((a,b)=>b.blk-a.blk);
+  if(cached){render();await refresh(TK.filter(t=>t.phase<2))}
+  if(ok){svC(head);CH=head}}catch(e){err=e.shortMessage||e.message;if(TK.length)toast("Chain refresh failed: "+err.slice(0,80))}
+ loading=false;render()}
+/* ---------- quote (formulas from the Pons v2 docs) ---------- */
+const BPS=10000n,ceilDiv=(a,b)=>(a+b-1n)/b,aOut=(i,ri,ro)=>(i*ro)/(ri+i),aIn=(o,ri,ro)=>(o*ri)/(ro-o)+1n;
+async function quoteBuy(t,quoteIn){
+ const [res,sellable,feeBps,tax,raw]=await Promise.all([rd(t.curve,C,"getReserves"),rd(t.curve,C,"sellableTokens"),rd(t.curve,C,"feeBps"),rd(t.curve,C,"creatorTaxBps"),rd(t.curve,C,"currentSnipeTaxBps",[acct||zeroAddress])]);
+ const [qR,tR]=res;let sn=raw;if(sn>0n){const mx=BPS-feeBps-tax-100n;if(sn>mx)sn=mx}
+ let spent=quoteIn,out=aOut(spent-(spent*feeBps)/BPS-(spent*tax)/BPS-(spent*sn)/BPS,qR,tR);
+ if(out>sellable){out=sellable;const g=ceilDiv(aIn(sellable,qR,tR)*BPS,BPS-feeBps-tax-sn);spent=g<quoteIn?g:quoteIn}
+ return {tokensOut:out,spent,refund:quoteIn-spent}}
+async function quoteSell(t,tokensIn){
+ const [res,feeBps,tax]=await Promise.all([rd(t.curve,C,"getReserves"),rd(t.curve,C,"feeBps"),rd(t.curve,C,"creatorTaxBps")]);
+ const g=aOut(tokensIn,res[1],res[0]);return g-(g*feeBps)/BPS-(g*tax)/BPS}
+/* ---------- wallet ---------- */
+async function ensureChain(){const id=await window.ethereum.request({method:"eth_chainId"});if(parseInt(id,16)===4663)return;
+ try{await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:"0x1237"}]})}catch(e){if(e.code!==4902&&e.code!==-32603)throw e;
+ await window.ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0x1237",chainName:"Robinhood Chain",nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},rpcUrls:[RPC],blockExplorerUrls:[EX]}]})}}
+function setAcct(a){acct=a||null;wc=a?createWalletClient({account:a,chain,transport:custom(window.ethereum)}):null;$("#wallet").textContent=a?short(a):"Connect wallet";$("#nFees").style.display=a&&a.toLowerCase()===TREASURY?"":"none";try{a?localStorage.setItem("bubble:w","1"):localStorage.removeItem("bubble:w")}catch(e){}}
+async function connect(){if(!window.ethereum){toast("Install a wallet first (MetaMask, Rabby, etc.)");return}
+ try{const [a]=await window.ethereum.request({method:"eth_requestAccounts"});setAcct(a);toast("Wallet connected");try{await ensureChain()}catch(e){toast("Switch to Robinhood Chain to trade")}}catch(e){toast((e.shortMessage||e.message||"Failed").slice(0,100))}}
+const done=async h=>{toast("Waiting for confirmation…");for(let t=0;;t++){try{const r=await pub.waitForTransactionReceipt({hash:h,timeout:180000});if(r.status!=="success")throw new Error("Transaction failed");return r}catch(e){if(isNet(e)&&t<6){await wait(2000);continue}throw e}}};
+/* ---------- render ---------- */
+const BU=(()=>{let p=[];for(let i=0;i<20;i++){const a=i/20*Math.PI*2,r=i%2?34:47+(i*7)%5;p.push((50+r*Math.cos(a)).toFixed(1)+","+(50+r*Math.sin(a)).toFixed(1))}return p.join(" ")})();
+const SH={round:`<path class="o" d="M30 76.2 L20 97 L54 79.9 A46 38 0 1 0 30 76.2Z"/>`,box:`<path class="o" d="M16 6H84Q96 6 96 18V62Q96 74 84 74H40L16 97L24 74H16Q4 74 4 62V18Q4 6 16 6Z"/>`,black:`<path class="o" d="M70 76.2 L80 97 L46 79.9 A46 38 0 1 1 70 76.2Z"/><path d="M20 24Q27 12 44 9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7" vector-effect="non-scaling-stroke"/>`,burst:`<polygon class="o" points="${BU}"/>`};
+const VAR=["round","box","black","burst"],vr=t=>VAR[parseInt(t.addr.slice(6,10),16)%4];
+const DD=`<span class="dd" style="left:3%;top:5%">✦</span><span class="dd" style="left:92%;top:8%">•</span><span class="dd" style="left:6%;top:90%">⚡</span><span class="dd" style="left:90%;top:86%">✦</span><span class="dd" style="left:48%;top:2%">~</span>`;
+const bub=(t,s,m="icon")=>{const v=vr(t),av=`<span class="av">${t.logo?`<img src="${esc(t.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}${esc((t.sym||"B")[0])}</span>`,bar=`<span class="gp"><u style="width:${Math.max(4,t.gr)}%"></u></span>`;
+ const body=m==="full"?`${av}<b>$${esc(t.sym)}</b>${t.ch==null?"":`<i class="${cls(t.ch)}">${pc(t.ch)}</i>`}${bar}`:m==="bar"?av+bar:av;
+ return `<span class="sb ${v} ${m}${s<100?" sm":""}${s<80?" xs":""}" style="--s:${s}px"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${SH[v]}</svg><span class="sc">${body}</span></span>`};
+const mcT=t=>t.mc?`${fmN(t.mc)} ${esc(t.pi.sym)}`:"–";
+function list(){if(tab==="graduated")return vis().filter(t=>t.phase>=2);let l=vis().filter(t=>t.phase<2);if(tab==="trending")l=[...l].sort((a,b)=>(b.ch??-1e9)-(a.ch??-1e9));return l}
+function pack(items,W,H){
+ const mx=Math.max(...items.map(t=>t.mcRel)),R=Math.min(W,H)<520?.7:1;
+ const r=items.map(t=>(36+Math.sqrt(t.mcRel/mx)*58)*R);
+ const p=items.map((_,i)=>({x:W/2+Math.cos(i*2.4)*i*(W/40),y:H/2+Math.sin(i*2.4)*i*(H/50)}));
+ for(let k=0,IT=items.length>40?120:220;k<IT;k++){
+  for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){
+   let dx=p[j].x-p[i].x,dy=p[j].y-p[i].y,d=Math.hypot(dx,dy)||1,m=r[i]+r[j]+8;
+   if(d<m){const f=(m-d)/2/d;p[i].x-=dx*f;p[i].y-=dy*f;p[j].x+=dx*f;p[j].y+=dy*f}}
+  p.forEach((q,i)=>{q.x+=(W/2-q.x)*.004;q.y+=(H/2-q.y)*.006;q.x=Math.max(r[i]+8,Math.min(W-r[i]-8,q.x));q.y=Math.max(r[i]+8,Math.min(H-r[i]-8,q.y))})}
+ return p.map((q,i)=>({x:q.x-r[i],y:q.y-r[i],d:r[i]*2}));
+}
+
+const feat=()=>{const f=FEATURED.toLowerCase();return vis().find(t=>f?t.addr.toLowerCase()===f:t.sym.toUpperCase()==="BUBBLE"&&t.by.toLowerCase()===TREASURY)};
+function render(){
+ const ft=feat(),ca=(ft?ft.addr:FEATURED)||"0x0000",real=/^0x[0-9a-fA-F]{40}$/.test(ca);
+ $("#feat").innerHTML="";
+ const s=vis().sort((a,b)=>b.mcRel-a.mcRel);
+ $("#hero").innerHTML=`<div>${bub(ft||PH,230,"full")}</div><div><h1>$BUBBLE</h1><div class="meta mono">${ft?`<span>${esc(ft.name)}</span><span>MC <b>${mcT(ft)}</b></span><span class="${cls(ft.ch)}">${pc(ft.ch)} since launch</span>`:`<span>The main token of Bubble</span>`}</div><div class="ca mono"><span>CA</span><code>${esc(ca)}</code>${real?`<button data-copy="${esc(ca)}">Copy</button>`:""}</div></div><div>${ft?`<button class="btn" data-open="${ft.addr}">Trade on Bubble</button>`:`<button class="btn" disabled>Coming soon</button>`}</div>`;
+ $("#top").innerHTML=s.filter(t=>t!==ft).slice(0,4).map(t=>`<button class="chip" data-open="${t.addr}">${bub(t,56)}<span class="t"><b class="mono">$${esc(t.sym)} / ${esc(t.pi.sym)}</b><span class="mono">${mcT(t)}</span></span><span class="mono ${cls(t.ch)}" style="font-size:13px">${pc(t.ch)}</span></button>`).join("");
+ const l=list(),st=$("#stage");$("#hint").style.display=view==="field"&&l.length?"":"none";
+ if(loading&&!TK.length)return void(st.innerHTML=`<div class="empty">Reading bubbles from Robinhood Chain…</div>`);
+ if(err&&!TK.length)return void(st.innerHTML=`<div class="empty">Could not read the chain: ${esc(err)}<br><br><button class="btn ghost" data-retry>Try again</button></div>`);
+ if(!l.length)return void(st.innerHTML=`<div class="empty">No tokens in this tab yet. Launch the first one with “New coin”.</div>`);
+ if(view==="grid")return void(st.innerHTML=`<div id="grid">${l.slice(0,lim).map(t=>`<button class="card" data-open="${t.addr}">${bub(t,130,"bar")}<small>${esc(t.name)}</small><b class="mono">$${esc(t.sym)} / ${esc(t.pi.sym)}</b><span class="row mono"><span>MC ${mcT(t)}</span><span class="${cls(t.ch)}">${pc(t.ch)}</span></span><span class="d">${esc(t.desc.slice(0,70))}</span></button>`).join("")}</div>${l.length>lim?`<button class="btn ghost more" data-more>Show more (${l.length-lim})</button>`:""}`);
+ st.innerHTML=`<div id="field"></div>`;const fl=l.slice(0,60),f=$("#field"),pos=pack(fl,f.clientWidth,f.clientHeight);
+ f.innerHTML=fl.map((t,i)=>{const q=pos[i];return `<button class="fb" aria-label="${esc(t.name)}" data-open="${t.addr}" style="left:${q.x}px;top:${q.y}px;width:${q.d}px;height:${q.d}px;--d:${5+(i%5)}s;--dl:-${i*.7}s;background:none;border:0;padding:0">${bub(t,q.d,"full")}</button>`}).join("")+DD}
+function drawTk(){const t=cur,pct=(t.fee||0)+(t.tax||0),web=/^https:\/\//.test(t.soc.website||"")?`<a href="${esc(t.soc.website)}" target="_blank" rel="noopener">website</a>`:"";
+ const notice=t.phase===2?"Graduated: trading continues in the Uniswap v4 pool (liquidity is locked permanently).":t.phase===1?"The curve is full and the pool is being created.":t.phase===3?"This launch used the recovery path. Be careful.":"";
+ $("#dbody").innerHTML=`${bub(t,150,"bar")}<h2>${esc(t.name)}</h2><div class="mono" style="text-align:center;color:var(--mute);font-size:13px">$${esc(t.sym)} · <a href="${EX}/token/${t.addr}" target="_blank" rel="noopener">${short(t.addr)}</a> ${web}</div>
+ <div style="text-align:center;font-size:14px">${esc(t.desc)}</div>
+ <div class="stats mono"><div>Market cap<b>${mcT(t)}</b></div><div>Since launch<b class="${cls(t.ch)}">${t.ch==null?"–":pc(t.ch)}</b></div><div>Raised<b>${fmN(Number(t.real||0n)/10**t.pi.dec)} / ${fmN(Number(t.thr)/10**t.pi.dec)} ${esc(t.pi.sym)}</b></div><div>Fee + creator tax<b>${t.fee==null?"…":pct/100+"%"}</b></div></div>
+ <div class="pbar"><i style="width:${Math.max(t.gr,1)}%"></i></div>
+ ${notice?`<div class="q">${notice}</div>`:`<div class="seg" style="align-self:center"><button data-m="buy" aria-pressed="${mode==="buy"}">Buy</button><button data-m="sell" aria-pressed="${mode==="sell"}">Sell</button></div>
+ <label>Amount ${esc(mode==="buy"?t.pi.sym:t.sym)}<input id="amt" inputmode="decimal" placeholder="0.0" value="${esc(amt)}"></label>
+ <div class="row2"><label>Slippage (%)<input id="slp" value="${esc(slip)}"></label><div class="q mono" id="q"></div></div>`}
+ <div class="acts"><button class="btn ghost" data-close>Close</button>${notice?"":`<button class="btn" id="act">${mode==="buy"?"Buy":"Sell"} $${esc(t.sym)}</button>`}</div>`;quote()}
+async function openTk(a){cur=TK.find(x=>x.addr===a);if(!cur)return;mode="buy";amt="";drawTk();$("#dlg").showModal();
+ const [f,x]=await Promise.all([rd(cur.curve,C,"feeBps").catch(()=>0n),rd(cur.curve,C,"creatorTaxBps").catch(()=>0n)]);cur.fee=Number(f);cur.tax=Number(x);drawTk()}
+async function quote(){const t=cur,el=$("#q");if(!el||!t)return;let v;try{v=parseUnits(amt||"0",mode==="buy"?t.pi.dec:18)}catch{el.textContent="";return}
+ if(v<=0n){el.textContent="";return}
+ try{if(mode==="buy"){const r=await quoteBuy(t,v);el.textContent=`≈ ${fmN(+formatUnits(r.tokensOut,18))} ${t.sym}${r.refund>0n?" (partial fill, remainder refunded)":""}`}else el.textContent=`≈ ${fmN(+formatUnits(await quoteSell(t,v),t.pi.dec))} ${t.pi.sym}`}catch(e){el.textContent="Quote failed"}}
+async function trade(){if(!acct)return connect();const t=cur,b=$("#act");b.disabled=true;
+ try{await ensureChain();const v=parseUnits(amt||"0",mode==="buy"?t.pi.dec:18),sl=BigInt(Math.round(parseFloat(slip||"1")*100));if(v<=0n)throw new Error("Enter an amount first");
+  if(mode==="buy"){const r=await quoteBuy(t,v),min=r.tokensOut*(BPS-sl)/BPS;
+   if(t.pair!==zeroAddress&&await rd(t.pair,K,"allowance",[acct,t.curve])<v){toast("Approve "+t.pi.sym+"…");await done(await wc.writeContract({address:t.pair,abi:K,functionName:"approve",args:[t.curve,v]}))}
+   await done(await wc.writeContract({address:t.curve,abi:C,functionName:"buy",args:[v,min,acct],...(t.pair===zeroAddress?{value:v}:{})}))}
+  else{const o=await quoteSell(t,v),args=[v,o*(BPS-sl)/BPS,acct];
+   try{await pub.simulateContract({account:acct,address:t.curve,abi:C,functionName:"sell",args})}catch(e){if(await rd(t.addr,K,"allowance",[acct,t.curve])<v){toast("Approve "+t.sym+"…");await done(await wc.writeContract({address:t.addr,abi:K,functionName:"approve",args:[t.curve,v]}))}else throw e}
+   await done(await wc.writeContract({address:t.curve,abi:C,functionName:"sell",args}))}
+  toast("Transaction confirmed ✓");await live(t);render();drawTk()}catch(e){toast((e.shortMessage||e.message||"Failed").slice(0,140));b.disabled=false}}
+async function openNew(){
+ $("#dbody").innerHTML=`<h2>Launch a bubble</h2><div class="q" id="lstat">Loading configuration…</div>
+ <div class="row2"><label>Name<input id="fn" maxlength="32" placeholder="Soap Dog"></label><label>Ticker<input id="fs" maxlength="10" placeholder="SOAP"></label></div>
+ <label>Description<textarea id="fd" rows="2" maxlength="200"></textarea></label>
+ <div class="row2"><label>Website<input id="fw" placeholder="https://"></label><label>Twitter<input id="ftw"></label></div>
+ <label>Telegram<input id="ftg"></label>
+ <label id="fcl" hidden style="display:none">Curve configuration<select id="fc"></select></label>
+ <label>First buy (ETH, optional, atomic via launchAndBuy)<input id="fb" inputmode="decimal" placeholder="0.0"></label>
+ <label>Creator tax (% of every trade)<select id="ftx">${Array.from({length:10},(_,i)=>`<option value="${i+1}">${i+1}%</option>`).join("")}</select></label><div class="q">Tax goes to the Bubble treasury.</div>
+ <div class="acts"><button class="btn ghost" data-close>Cancel</button><button class="btn" id="go">Launch</button></div>`;
+ $("#dlg").showModal();
+ try{const n=Number(await rd(A.factory,F,"launchConfigCount")),cs=await Promise.all(Array.from({length:n},(_,i)=>rd(A.factory,F,"getLaunchConfig",[BigInt(i)])));
+  const op=cs.map((c,i)=>({i,...c})).filter(c=>c.enabled),one=op[0]||null;OPS=op;$("#fc").innerHTML=op.map(c=>`<option value="${c.i}">Config #${c.i} · target ${fmN(+formatUnits(c.graduationThreshold,18))} ETH · fee ${Number(c.curveFeeBps)/100}%</option>`).join("");
+  const [fee,can,mx]=await Promise.all([rd(A.factory,F,"launchFee"),acct?rd(A.factory,F,"canLaunch",[acct]).catch(()=>null):null,rd(A.factory,F,"maxCreatorTaxBps").catch(()=>null)]);
+  if(mx!=null){const m=Math.min(10,Math.floor(Number(mx)/100));$("#ftx").innerHTML=Array.from({length:m},(_,i)=>`<option value="${i+1}">${i+1}%</option>`).join("")}
+  $("#lstat").innerHTML=`Launch fee ${formatEther(fee)} ETH · `+(one?`target graduate ${fmN(+formatUnits(one.graduationThreshold,18))} ETH · `:"")+(!acct?"connect a wallet to check access":can===true?"this wallet can launch ✓":can===false?"<b>public launching on Pons is still closed; this wallet is not whitelisted</b>":"launch access could not be checked")}catch(e){$("#lstat").textContent="Could not load configuration: "+(e.shortMessage||e.message)}}
+async function launch(){if(!acct)return connect();const v=id=>$("#"+id).value.trim(),sym=v("fs").toUpperCase();
+ if(!v("fn")||!/^[A-Z0-9]{1,10}$/.test(sym))return toast("Enter a name and a ticker (A–Z, 0–9)");
+ const b=$("#go");b.disabled=true;
+ try{await ensureChain();const cid=BigInt(v("fc")||"0"),buy=v("fb")?parseEther(v("fb")):0n;
+  const [exp,fee]=await Promise.all([rd(A.factory,F,"previewLaunchEconomics",[cid,zeroAddress]),rd(A.factory,F,"launchFee")]);
+  const p={name:v("fn"),symbol:sym,logo:"",description:v("fd"),socials:{twitter:v("ftw"),telegram:v("ftg"),discord:"",website:v("fw"),farcaster:""},creatorFeeRecipient:TREASURY,creatorTaxBps:(Number($("#ftx").value)||0)*100,buybackEnabled:false,expectedEconomics:exp,salt:toHex(crypto.getRandomValues(new Uint8Array(32)))};
+  const sim=(q,c)=>buy>0n?pub.simulateContract({account:acct,address:A.router,abi:R,functionName:"launchAndBuy",args:[q,c,zeroAddress,buy,0n,acct,[]],value:fee+buy}):pub.simulateContract({account:acct,address:A.factory,abi:F,functionName:"launchToken",args:[q,c,zeroAddress],value:fee});
+  const simR=async(q,c,t=0)=>{try{return await sim(q,c)}catch(e){if(isNet(e)&&t<3){await wait(700*(t+1));return simR(q,c,t+1)}throw e}};
+  try{await simR(p,cid)}catch(e){if(isNet(e))toast("RPC is busy, pre-check skipped. Your wallet will still simulate it.");else{
+   const why=String(e.cause?.data?.errorName||e.cause?.signature||e.cause?.reason||e.shortMessage||e.message).slice(0,140),ok=[],
+    tries=[["tax 0%",{...p,creatorTaxBps:0},cid],...OPS.filter(o=>BigInt(o.i)!==cid).map(o=>["config #"+o.i,p,BigInt(o.i)])];
+   for(const [n,q,c] of tries){try{await sim(c===cid?q:{...q,expectedEconomics:await rd(A.factory,F,"previewLaunchEconomics",[c,zeroAddress])},c);ok.push(n)}catch(_){}}
+   $("#lstat").innerHTML="<b>This launch would fail</b> ("+esc(why)+"). "+(ok.length?"It would work with: "+esc(ok.join(", "))+".":"Check the name/ticker or send this error to the developer.");
+   b.disabled=false;return}}
+  const h=buy>0n?await wc.writeContract({address:A.router,abi:R,functionName:"launchAndBuy",args:[p,cid,zeroAddress,buy,0n,acct,[]],value:fee+buy}):await wc.writeContract({address:A.factory,abi:F,functionName:"launchToken",args:[p,cid,zeroAddress],value:fee});
+  const r=await done(h);$("#dlg").close();toast("$"+sym+" launched 🫧");
+  try{for(const l of parseEventLogs({abi:[EV],logs:r.logs,eventName:"TokenLaunched"})){if(l.args.token&&!TK.some(t=>t.addr===l.args.token)){const o=await build(l);if(!TK.some(t=>t.addr===o.addr))TK.unshift(o)}}TK.sort((a,b)=>b.blk-a.blk);svC(CH);render()}catch(e){}
+  load()}catch(e){toast((e.shortMessage||e.message||"Failed").slice(0,160));b.disabled=false}}
+const poolId=t=>{const [c0,c1]=t.pair.toLowerCase()<t.addr.toLowerCase()?[t.pair,t.addr]:[t.addr,t.pair];return keccak256(encodeAbiParameters([{type:"address"},{type:"address"},{type:"uint24"},{type:"int24"},{type:"address"}],[c0,c1,t.pf,t.ts,A.hook]))};
+async function pending(t){try{if(t.phase===0){const [a,b]=await Promise.all([rd(t.curve,C2,"quoteFeeBalance"),rd(t.curve,C2,"creatorTaxBalance")]);return a+b}
+ if(t.phase===2){const id=poolId(t),[a,b]=await Promise.all([rd(A.hook,H,"pendingFees",[id,t.pair]),rd(A.hook,H,"pendingCreatorTax",[id,t.pair])]);return a+b}}catch(e){}return 0n}
+async function openFees(){if(!acct){await connect();if(!acct)return}
+ $("#dbody").innerHTML=`<h2>Creator fees</h2><div class="q">Loading…</div><div class="acts"><button class="btn ghost" data-close>Close</button></div>`;$("#dlg").showModal();await drawFees()}
+async function drawFees(){const me=acct.toLowerCase(),mine=TK.filter(t=>(t.cfr||"").toLowerCase()===me),assets=[...new Set([zeroAddress,...mine.map(t=>t.pair)])];
+ try{const [bal,rows]=await Promise.all([Promise.all(assets.map(a=>rd(A.escrow,E,a===zeroAddress?"balanceOf":"balanceOfToken",a===zeroAddress?[acct]:[acct,a]).catch(()=>0n))),Promise.all(mine.map(pending))]);
+ $("#dbody").innerHTML=`<h2>Creator fees</h2><div class="q">Fees reach escrow only after a sweep. Sweep first, then claim.</div>
+ <b style="font-size:14px">Ready to claim</b>
+ ${assets.map((a,i)=>{const p=PAIR[a]||{sym:"ETH",dec:18};return `<div class="frow"><span class="mono">${fmN(Number(bal[i])/10**p.dec)} ${esc(p.sym)}</span><button class="btn" data-claim="${a}" ${bal[i]>0n?"":"disabled"}>Claim</button></div>`}).join("")}
+ <b style="font-size:14px">Your tokens</b>
+ ${mine.length?mine.map((t,i)=>`<div class="frow"><span><b>$${esc(t.sym)}</b><small class="mono">${t.phase===2?"Unswept in pool":"Unswept on curve"}: ${fmN(Number(rows[i])/10**t.pi.dec)} ${esc(t.pi.sym)}</small></span><button class="btn ghost" data-sweep="${t.addr}" ${rows[i]>0n&&(t.phase===0||t.phase===2)?"":"disabled"}>Sweep</button></div>`).join(""):`<div class="q">No tokens found where this wallet is the fee recipient.</div>`}
+ <div class="acts"><button class="btn ghost" data-close>Close</button></div>`}catch(e){$("#dbody").innerHTML=`<h2>Creator fees</h2><div class="q">Could not load fees: ${esc(e.shortMessage||e.message)}</div><div class="acts"><button class="btn ghost" data-close>Close</button></div>`}}
+async function claim(a){try{await ensureChain();await done(await wc.writeContract(a===zeroAddress?{address:A.escrow,abi:E,functionName:"claim"}:{address:A.escrow,abi:E,functionName:"claimToken",args:[a]}));toast("Claimed ✓");drawFees()}catch(e){toast((e.shortMessage||e.message||"Failed").slice(0,140))}}
+async function sweep(a){const t=TK.find(x=>x.addr===a);try{await ensureChain();await done(await wc.writeContract(t.phase===0?{address:t.curve,abi:C2,functionName:"sweepFees",args:[0n]}:{address:A.hook,abi:H,functionName:"sweepPoolFees",args:[poolId(t),0n,0n]}));toast("Swept ✓ fees moved to escrow");drawFees()}
+ catch(e){const m=(e.shortMessage||e.message||"")+JSON.stringify(e.cause?.data||"");toast(/InternalSwapRequiresOperator/.test(m)?"This sweep needs the Pons operator (buyback or conversion). It runs automatically.":(e.shortMessage||e.message||"Failed").slice(0,140))}}
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{const x=e.target,b=x.closest("[data-open],[data-copy],[data-close],[data-t],[data-v],[data-m],[data-retry],[data-claim],[data-sweep],[data-more]");
+ if(x.id==="go")return launch();if(x.id==="act")return trade();if(x.id==="heroNew")return openNew();if(!b)return;
+ const d=b.dataset;if(d.more!==undefined){lim+=60;render();return}if(d.claim){claim(d.claim);return}if(d.sweep){sweep(d.sweep);return}if(d.open)openTk(d.open);else if(d.copy){try{navigator.clipboard.writeText(d.copy)}catch(_){}toast("Address copied")}
+ else if(b.hasAttribute("data-close"))$("#dlg").close();else if(d.m){mode=d.m;amt="";drawTk()}else if(d.retry!==undefined)load();
+ else if(d.t){tab=d.t;$$(".tabs button").forEach(y=>y.setAttribute("aria-selected",y===b));render()}
+ else if(d.v){view=d.v;$$(".seg button[data-v]").forEach(y=>y.setAttribute("aria-pressed",y===b));render()}});
+document.addEventListener("input",e=>{if(e.target.id==="amt"){amt=e.target.value;clearTimeout(qt);qt=setTimeout(quote,350)}if(e.target.id==="slp")slip=e.target.value});
+$("#dlg").addEventListener("click",e=>{if(e.target.id==="dlg")e.target.close()});
+$("#nNew").onclick=openNew;$("#nFees").onclick=openFees;
+$("#wallet").onclick=()=>{if(acct){setAcct(null);toast("Wallet disconnected")}else connect()};
+if(window.ethereum){window.ethereum.on?.("accountsChanged",a=>{if(acct)setAcct(a&&a[0]||null)});
+ try{if(localStorage.getItem("bubble:w"))window.ethereum.request({method:"eth_accounts"}).then(a=>{if(a&&a[0]&&!acct)setAcct(a[0])}).catch(()=>{})}catch(e){}}
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>view==="field"&&TK.length&&render(),250)});
+setInterval(async()=>{if(document.hidden||!TK.length)return;await refresh(TK.filter(t=>t.phase<2).slice(0,12));if(!$("#dlg").open)render()},30000);
+load();
+try{pub.watchEvent({address:A.factory,event:EV,pollingInterval:5000,onError:()=>{},onLogs:async ls=>{let add=false;for(const l of ls){const t=l.args&&l.args.token;if(t&&!TK.some(x=>x.addr===t)){try{const o=await build(l);if(!TK.some(x=>x.addr===o.addr)){TK.unshift(o);add=true;toast("New token $"+o.sym)}}catch(e){}}}
+ if(add){TK.sort((a,b)=>b.blk-a.blk);svC(CH);if(!$("#dlg").open)render()}}})}catch(e){}
+</script>
+</body>
+</html>
